@@ -14,6 +14,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
+        if (history.nodeMap.containsKey(task.getId())) {
+            remove(task.getId());
+        }
         history.linkLast(task);
     }
 
@@ -53,54 +56,55 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
 
         public void linkLast(Task task) {
-            if (nodeMap.containsKey(task.getId())) {
-                nodeMap.get(task.getId()).task = task;
-            } else {
-                final Node<Task> node = new Node<>(task, last, null);
-                if (first == null) {
-                    first = node;
-                } else {
-                    last.next = node;
-                }
-                last = node;
-                nodeMap.put(task.getId(), node);
-            }
-        }
-
-        public void remove(int id) {
-            if (nodeMap.containsKey(id)) {
-                Task task = nodeMap.get(id).task;
-                if (checkInFirstAndSetNext(task)) {
-                    return;
-                }
-                Node<Task> currentNode = first;
-                if (updateNextInNew(task, currentNode)) {
-                    return;
-                }
-                nodeMap.remove(id);
-            }
-        }
-
-        private boolean checkInFirstAndSetNext(Task task) {
+            final Node<Task> node = new Node<>(task, last, null);
             if (first == null) {
-                return true;
+                first = node;
+            } else {
+                last.next = node;
             }
-            if (first.task.equals(task)) {
-                first = first.next;
-                return true;
+            last = node;
+            nodeMap.put(task.getId(), node);
+        }
+
+        public boolean remove(int id) {
+            Task task = nodeMap.get(id).task;
+            if (task == null) {
+                for (Node<Task> x = first; x != null; x = x.next) {
+                    if (x.task == null) {
+                        unlink(x);
+                        return true;
+                    }
+                }
+            } else {
+                for (Node<Task> x = first; x != null; x = x.next) {
+                    if (task.equals(x.task)) {
+                        unlink(x);
+                        return true;
+                    }
+                }
             }
             return false;
         }
 
-        private boolean updateNextInNew(Task task, Node<Task> currentNode) {
-            while (currentNode.next != null) {
-                if (currentNode.next.task.equals(task)) {
-                    currentNode.next = currentNode.next.next;
-                    return true;
-                }
-                currentNode = currentNode.next;
+        void unlink(Node<Task> x) {
+            final Node<Task> next = x.next;
+            final Node<Task> prev = x.before;
+
+            if (prev == null) {
+                first = next;
+            } else {
+                prev.next = next;
+                x.before = null;
             }
-            return false;
+
+            if (next == null) {
+                last = prev;
+            } else {
+                next.before = prev;
+                x.next = null;
+            }
+
+            x.task = null;
         }
     }
 }

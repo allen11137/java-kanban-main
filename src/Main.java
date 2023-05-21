@@ -21,11 +21,11 @@ public class Main {
         manager.createTask(subtask1);
         Subtask subtask2 = new Subtask(epic1.getId(), "subtask 2", "info subtask 2");
         manager.createTask(subtask2);
-        Subtask subtask3 = new Subtask(epic1.getId(), "subtask 3", "info subtask 3");
-        manager.createTask(subtask3);
         Epic epic2 = new Epic("epic 2", "info epic 2");
-//
         manager.createTask(epic2);
+        Subtask subtask3 = new Subtask(epic2.getId(), "subtask 3", "info subtask 3");
+        manager.createTask(subtask3);
+//
 
         manager.getById(3);
         manager.getById(2);
@@ -36,14 +36,19 @@ public class Main {
         manager.getById(5);
         manager.getById(7);
         manager.getById(7);
+        manager.getById(3);
 
 //        manager.getHistory().forEach(System.out::println);
 //        manager.removeById(4);
 //        manager.getHistory().forEach(System.out::println);
         System.out.println("______________________");
-        manager.removeById(epic1.getId());
+//        manager.removeById(epic1.getId());
+//        manager.removeById(subtask2.getId());
+        manager.removeById(subtask1.getId());
         manager.getHistory().forEach(System.out::println);
-
+/* «алезла в документацию LinkedList и сделала реализацию на ее основе.
+“акже исправила баг по пункту из задани€(после каждого запроса выведите историю и убедитесь, что в ней нет повторов).
+ */
 
     }
 }

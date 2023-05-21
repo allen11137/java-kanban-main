@@ -79,9 +79,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
-        if (task instanceof Task) {
-            tasks.put(task.getId(), task);
-        } else if (task instanceof Epic) {
+        if (task instanceof Epic) {
             epics.put(task.getId(), (Epic) task);
         } else if (task instanceof Subtask) {
             subtasks.put(task.getId(), (Subtask) task);
@@ -97,6 +95,8 @@ public class InMemoryTaskManager implements TaskManager {
             if (statusDoneSubtasks == countSubtasks) {
                 epic.setStatus(Status.DONE);
             }
+        } else {
+            tasks.put(task.getId(), task);
         }
     }
 
